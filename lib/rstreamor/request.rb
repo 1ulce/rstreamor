@@ -1,10 +1,10 @@
 module Rstreamor
   class Request
-    attr_accessor :request, :file
+    attr_accessor :request
 
     def initialize(request, file)
       self.request = request
-      self.file = file
+      @@file = file
     end
 
     def ranges
@@ -12,7 +12,7 @@ module Rstreamor
     end
 
     def upper_bound
-      ranges[1] ? ranges[1].to_i : self.file.data.size
+      ranges[1] ? (ranges[1]).to_i : @@file.size
     end
 
     def lower_bound
@@ -24,19 +24,19 @@ module Rstreamor
     end
 
     def file_content_type
-      self.file.content_type
+      "text/html"
     end
 
-    def slice_file
+    def slice_file(file)
       if self.request.headers['HTTP_RANGE'].present?
-        self.file.data.byteslice(lower_bound, upper_bound)
+        file.read[lower_bound, upper_bound]
       else
-        self.file.data
+        file.read
       end
     end
 
     def file_size
-      self.file.size
+      @@file.size
     end
 
   end
